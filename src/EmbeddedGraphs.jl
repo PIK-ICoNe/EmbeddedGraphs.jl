@@ -13,11 +13,11 @@ module EmbeddedGraphs
           has_edge, has_vertex, inneighbors, ne, nv, outneighbors,
           vertices, is_directed, add_vertex!, rem_vertex!, edgetype, euclidean
 
-"""
-    EmbeddedGraph{T<:Integer, U} <: AbstractGraph{T}
+  """
+      EmbeddedGraph{T<:Integer, U} <: AbstractGraph{T}
 
-    Embedded Graph
-"""
+  Embedded Graph
+  """
   struct EmbeddedGraph{T<:Integer, U} <: AbstractGraph{T}
       graph::SimpleGraph{T}
       vertexpos::Array{U, 1}
@@ -31,8 +31,16 @@ module EmbeddedGraphs
       evaluate(Euclidean(), pos1, pos2)
   end
 
-  function EmbeddedGraph(graph, vertexpos)
+  function EmbeddedGraph(graph::SimpleGraph, vertexpos::Array)
       EmbeddedGraph(graph, vertexpos, euclidean)
+  end
+
+  function EmbeddedGraph(graph::SimpleGraph, vertexpos::Array, distance::Function)
+      EmbeddedGraph(graph, vertexpos, distance)
+  end
+
+  function EmbeddedGraph(graph::SimpleGraph, vertexpos::Array, distance::Metric)
+      EmbeddedGraph(graph, vertexpos, (x, y) -> evaluate(distance, x, y))
   end
 
   # Our first design is to make g indexable to get distances
@@ -76,4 +84,4 @@ module EmbeddedGraphs
       deleteat!(g.vertexpos, vs)
   end
 
-end
+end # end of module EmbeddedGraphs
