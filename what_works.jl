@@ -32,7 +32,7 @@ begin
     end
 
     function Base.getindex(wm::WM, i, j)
-        wm.eg.distance(wm.eg.vertexpos[i], wm.eg.vertexpos[j])
+        wm.eg.distance(i, j)
     end
 
     function Base.size(wm::WM)

@@ -7,10 +7,6 @@ import LightGraphs.edges, Base.getindex, Base.eltype, LightGraphs.ne, LightGraph
         LightGraphs.is_directed, LightGraphs.edgetype, LightGraphs.weights,
         LightGraphs.inneighbors
 
-export euclidean, weights, edges, EmbeddedGraph,
-        has_edge, has_vertex, inneighbors, ne, nv, outneighbors,
-        vertices, is_directed, add_vertex!, rem_vertex!, edgetype, euclidean
-
 """
     EmbeddedGraph{T<:Integer, U} <: AbstractGraph{T}
 
