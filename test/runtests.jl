@@ -1,6 +1,7 @@
 using Test
 using Random
 using LightGraphs
+using SparseArrays
 import Distances: Haversine, Euclidean
 
 using EmbeddedGraphs
@@ -10,6 +11,7 @@ Random.seed!(42)
 g = barabasi_albert(20, 3)
 pos = [rand(2) for i in 1:20]
 eg = EmbeddedGraph(g, pos)
+eg = EmbeddedGraph(copy(g), pos)
 
 @testset "testing the constructor" begin
     @test eg.graph == g
@@ -45,7 +47,7 @@ end
 end
 
 @testset "testing weights function" begin
-    @test weights(eg) == eg
+    @test typeof(weights(eg)) <: SparseMatrixCSC
     @test iszero(eg[1, 1])
     @test eg[1, 2] == eg[2, 1]
     # test cartesian indexing
@@ -53,21 +55,23 @@ end
 end
 
 @testset "testing additional method extensions" begin
-    @test zero(eg) == zero(g)
+    @test typeof(zero(eg)) <: EmbeddedGraph
     @test edgetype(eg) == edgetype(g)
 end
 
 @testset "testing the removal/addition of vertices" begin
     add_vertex!(eg, rand(2))
     @test nv(eg) == nv(g) + 1
-    rem_vertex!(eg, 2, keep_order=true)
+    rem_vertex!(eg, 2)
     @test nv(eg) == nv(g)
-    # the following should throw a warning
-    @test_logs (:warn, "keep_order needs to be true!") rem_vertex!(eg, 2, keep_order=false)
+
+end
+@testset "testing the correct location functions" begin
+    @test vertices_loc_x(eg)[1] == pos[1][1]
+    @test vertices_loc_y(eg)[10] == pos[10][2]
 end
 
 @testset "testing characteristics" begin
     di = detour_indices(eg, 1)
     @test isnan(di[1])
-    @test isnumeric(di[2])
 end
