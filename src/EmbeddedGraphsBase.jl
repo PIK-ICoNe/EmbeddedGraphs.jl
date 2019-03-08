@@ -4,7 +4,7 @@ using SparseArrays
 import LightGraphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
                     is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
                     add_edge!, add_vertex!, add_vertices!, rem_vertex!
-import Base: getindex, eltype
+import Base: getindex, eltype, rand
 
 """
     EmbeddedGraph{T<:Integer, U} <: AbstractGraph{T}
@@ -39,23 +39,24 @@ end
 # Our first design is to make g indexable to get distances
 # weights(g::EmbeddedGraph) = g
 # Distance is constructed with a sparse matrix
-function weights(g::EmbeddedGraph)
-    A = spzeros(nv(g),nv(g))
-    for ed in edges(g.graph)
-        A[src(ed), dst(ed)] = A[dst(ed), src(ed)] = distance(g.vertexpos[src(ed)], g.vertexpos[dst(ed)])
+function weights(g::EmbeddedGraph; dense::Bool=false)
+    if dense
+        A = zeros(nv(g), nv(g))
+        for i in 1:nv(g)-1
+            for j in i:nv(g)
+                A[i,j] = A[j,i] = distance(g.vertexpos[i], g.vertexpos[j])
+            end
+        end
+    else
+        A = spzeros(nv(g),nv(g))
+        for ed in edges(g.graph)
+            A[src(ed), dst(ed)] = A[dst(ed), src(ed)] = distance(g.vertexpos[src(ed)], g.vertexpos[dst(ed)])
+        end
     end
     A
 end
 
-"""Weights function with dense matrix"""
-# function weights(g::EmbeddedGraph)
-#     A = zeros(nv(g), nv(g))
-#     for i in 1:nv(g)-1
-#         for j in i:nv(g)
-#             A[i,j] = A[j,i] = distance(g.vertexpos[i], g.vertexpos[j])
-#         end
-#     end
-# end
+
 
 function distance(pos1, pos2)
     evaluate(Euclidean(), pos1, pos2)
@@ -112,6 +113,11 @@ outneighbors(g::EmbeddedGraph, args...) = outneighbors(g.graph, args...)
 vertices(g::EmbeddedGraph, args...) = vertices(g.graph, args...)
 is_directed(g::EmbeddedGraph, args...) = false
 is_directed(::Type{EmbeddedGraph}) = false
+add_edge!(g::EmbeddedGraph, args...) = add_edge!(g.graph,args...)
+rem_edge!(g::EmbeddedGraph, args...) = rem_edge!(g.graph,args...)
+rand(e::LightGraphs.SimpleGraphs.SimpleEdgeIter) = rand(collect(e))
+
+
 
 # The following four are not in the Developer Documentation
 is_directed(::Type{EmbeddedGraph{T, U}}) where T <: Integer where U = false
