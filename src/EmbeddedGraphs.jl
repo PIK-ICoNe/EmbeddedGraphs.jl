@@ -1,15 +1,22 @@
 module EmbeddedGraphs
 
     # EmbeddedGraph constructors
-    include(joinpath(dirname(pathof(@__MODULE__)), "EmbeddedGraphBase.jl"))
+    include(joinpath(dirname(@__FILE__), "EmbeddedGraphsBase.jl"))
+    export  distance, weights, edges, EmbeddedGraph, add_edge!, rem_edge!
+            has_edge, has_vertex, inneighbors, ne, nv, outneighbors, inneighbors
+            vertices, is_directed, add_vertex!, add_vertices!, rem_vertex!,
+            rem_vertices!, edgetype, add_edge!, rem_edge!
 
-    export euclidean, weights, edges, EmbeddedGraph,
-            has_edge, has_vertex, inneighbors, ne, nv, outneighbors,
-            vertices, is_directed, add_vertex!, rem_vertex!, edgetype, euclidean
+    export vertices_loc_x, vertices_loc_y
+
 
     # network characteristics
-    include(joinpath(dirname(pathof(@__MODULE__)), "Characteristics.jl"))
+    include(joinpath(dirname(@__FILE__), "Characteristics.jl"))
 
     export detour_indices
+
+    include(joinpath(dirname(@__FILE__), "EmbeddedGraphsPlot.jl"))
+
+    export gplot
 
 end # end of module EmbeddedGraphs
