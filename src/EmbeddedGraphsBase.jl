@@ -57,13 +57,6 @@ function weights(EG::EmbeddedGraph; dense::Bool=false)
     A
 end
 
-"""
-    Extends Base.getindex function to be able to call EG[i,j]. Returns the
-    distance of the two vertices in the metric of the graph.
-"""
-Base.getindex(EG::EmbeddedGraph, i, j) = EG.distance(i, j)
-Base.getindex(EG::EmbeddedGraph, I::CartesianIndex{2}) = EG.distance(Tuple(I)...)
-
 
 """ Adds vertex in the given graph. Position in the form [x,y,z,...] needed."""
 function add_vertex!(EG::EmbeddedGraph, pos::Array, args...)
@@ -78,6 +71,17 @@ function add_vertices!(EG::EmbeddedGraph, pos::Array, args...)
     end
 end
 
+"""
+    Extends LightGraphs function and deletes also the element in the
+    EG.vertexpos array. rem_vertex! in LightGraphs swaps the vertex v with
+    the last vertex and then uses pop! on the list to delete the last element.
+"""
+    function rem_vertex!(EG::EmbeddedGraph, v::Integer, args...)
+        rem_vertex!(EG.graph, v, args...)
+        EG.vertexpos[v] = EG.vertexpos[end]
+        pop!(EG.vertexpos)
+    end
+
 """ Removes multiple vertices with given Indices at once"""
 function rem_vertices!(EG::EmbeddedGraph, vs::AbstractVector{<:Integer}, args...)
     for i in vs
@@ -86,22 +90,20 @@ function rem_vertices!(EG::EmbeddedGraph, vs::AbstractVector{<:Integer}, args...
 end
 
 """
-    Extends LightGraphs function and deletes also the element in the
-    EG.vertexpos array
+Functions return an array with the value of the vertices in the given spatial direction
+1 == x direction, 2 == y direction, 3 == z direction ...
 """
-function rem_vertex!(EG::EmbeddedGraph, vs::Integer, args...)
-    rem_vertex!(EG.graph, vs, args...)
-    deleteat!(EG.vertexpos, vs)
-end
+vertices_loc(EG::EmbeddedGraph, spatial_dir::Int) = map(i -> EG.vertexpos[i][spatial_dir], 1:nv(EG))
+
+"""
+Extends Base.getindex function to be able to call EG[i,j]. Returns the
+distance of the two vertices in the metric of the graph.
+"""
+Base.getindex(EG::EmbeddedGraph, i, j) = EG.distance(i, j)
+Base.getindex(EG::EmbeddedGraph, I::CartesianIndex{2}) = EG.distance(Tuple(I)...)
 
 """Extends the Base.rand function to work with a SimpleEdgeIter"""
 Base.rand(edge_iter::LightGraphs.SimpleGraphs.SimpleEdgeIter) = rand(collect(edge_iter))
-
-"""
-    Functions return an array with the value of the vertices in the given spatial direction
-    1 == x direction, 2 == y direction, 3 == z direction ...
-"""
-vertices_loc(EG::EmbeddedGraph, spatial_dir::Int) = map(i -> EG.vertexpos[i][spatial_dir], 1:nv(EG))
 
 """Extends basic LightGraphs functions to work with EmbeddedGraphs"""
 edges(EG::EmbeddedGraph, args...) = LightGraphs.edges(EG.graph, args...)

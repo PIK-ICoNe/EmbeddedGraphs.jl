@@ -5,8 +5,8 @@ using Compose
 import GraphPlot.gplot
 
 function gplot(g::EmbeddedGraph, args...)
-    loc_x = vertices_loc_x(g)
-    loc_y = vertices_loc_y(g)
+    loc_x = vertices_loc(g,1)
+    loc_y = vertices_loc(g,2)
     gplot(g.graph, loc_x, loc_y, args...)
 end
 

@@ -2,12 +2,13 @@ module EmbeddedGraphs
 
     # EmbeddedGraph constructors
     include(joinpath(dirname(@__FILE__), "EmbeddedGraphsBase.jl"))
-    export  weights, edges, EmbeddedGraph, add_edge!, rem_edge!
-            has_edge, has_vertex, inneighbors, ne, nv, outneighbors, inneighbors
-            vertices, is_directed, add_vertex!, add_vertices!, rem_vertex!,
-            rem_vertices!, edgetype, add_edge!, rem_edge!
+    export  edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
+            is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
+            add_edge!, add_vertex!, add_vertices!, rem_vertex!
 
-    export vertices_loc, rand
+    export weights, EmbeddedGraph, rem_vertices!, vertices_loc
+
+    export getindex, rand
 
 
     # network characteristics
