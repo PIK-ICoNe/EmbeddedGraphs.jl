@@ -7,7 +7,7 @@ module EmbeddedGraphs
             vertices, is_directed, add_vertex!, add_vertices!, rem_vertex!,
             rem_vertices!, edgetype, add_edge!, rem_edge!
 
-    export vertices_loc_x, vertices_loc_y, rand
+    export vertices_loc, rand
 
 
     # network characteristics
