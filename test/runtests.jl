@@ -10,7 +10,6 @@ Random.seed!(42)
 
 g = barabasi_albert(20, 3)
 pos = [rand(2) for i in 1:20]
-eg = EmbeddedGraph(g, pos)
 eg = EmbeddedGraph(copy(g), pos)
 
 @testset "testing the constructor" begin
@@ -67,8 +66,8 @@ end
 
 end
 @testset "testing the correct location functions" begin
-    @test vertices_loc_x(eg)[1] == pos[1][1]
-    @test vertices_loc_y(eg)[10] == pos[10][2]
+    @test vertices_loc(eg, 1)[1] == pos[1][1]
+    @test vertices_loc(eg, 2)[10] == pos[10][2]
 end
 
 @testset "testing characteristics" begin
