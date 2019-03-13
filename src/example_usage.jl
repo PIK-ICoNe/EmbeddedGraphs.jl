@@ -9,7 +9,7 @@ positions = map(i->[rand(),rand()], 1:10)
 eg = EmbeddedGraph(SimpleGraph(10), positions)
 
 # In case you want to have a different Metric this is possible with a third argument
-eg_minkowski = EmbeddedGraph(SimpleGraph(10), positions, minkowski)
+eg_minkowski = EmbeddedGraph(SimpleGraph(10), positions, (i,j) -> minkowski(i, j, 2.))
 
 # Calculate the distance between two vertices
 eg[1,9]
