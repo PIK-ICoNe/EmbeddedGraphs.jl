@@ -10,25 +10,31 @@ import LightGraphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
 import Base: getindex, eltype, rand
 
 """
-    EmbeddedGraph{T<:Integer, U} <: AbstractGraph{T}
+    EmbeddedGraph{T<:Integer} <: AbstractGraph{T}
 
 Embedded Graph
 """
-struct EmbeddedGraph{T<:Integer, U} <: AbstractGraph{T}
+struct EmbeddedGraph{T<:Integer} <: AbstractGraph{T}
     graph::SimpleGraph{T}
-    vertexpos::Array{U, 1}
+    vertexpos::Array
     distance::Function
+    function EmbeddedGraph{T}(graph::SimpleGraph{T}, vertexpos::Array, distance::Function) where T <: Integer
+        new(graph, vertexpos, distance)
+    end
 end
 
 """Constructor functions for the EmbeddedGraph structure"""
-function EmbeddedGraph(EG::SimpleGraph, vertexpos::Array)
-    EmbeddedGraph(EG, vertexpos, (i, j) -> euclidean(vertexpos[i], vertexpos[j]))
+function EmbeddedGraph(graph::SimpleGraph{T}, vertexpos::Array, distance::Function) where T <: Integer
+    EmbeddedGraph{T}(graph, vertexpos, (i, j) -> distance(vertexpos[i], vertexpos[j]))
 end
-function EmbeddedGraph(EG::SimpleGraph, vertexpos::Array, distance::Function)
-    EmbeddedGraph(EG, vertexpos, (i, j) -> distance(vertexpos[i], vertexpos[j]))
+function EmbeddedGraph(SG::SimpleGraph, vertexpos::Array)
+    EmbeddedGraph(SG, vertexpos, euclidean)
 end
+# function EmbeddedGraph(SG::SimpleGraph, vertexpos::Array, distance::Function)
+#     EmbeddedGraph(SG, vertexpos, distance) = new(EG,(i, j) -> distance(vertexpos[i], vertexpos[j]))
+# end
 function EmbeddedGraph(EG::SimpleGraph, vertexpos::Array, distance::Metric)
-    EmbeddedGraph(EG, vertexpos, (i, j) -> evaluate(distance, vertexpos[i], vertexpos[j]))
+    EmbeddedGraph(EG, vertexpos, (i, j) -> evaluate(distance, i, j))
 end
 
 # Our first design is to make g indexable to get distances
@@ -121,8 +127,8 @@ add_edge!(EG::EmbeddedGraph, args...) = add_edge!(EG.graph,args...)
 rem_edge!(EG::EmbeddedGraph, args...) = rem_edge!(EG.graph,args...)
 
 # The following four are not in the Developer Documentation
-is_directed(::Type{EmbeddedGraph{T, U}}) where T <: Integer where U = false
+is_directed(::Type{EmbeddedGraph{T}}) where T <: Integer = false
 zero(EG::EmbeddedGraph) = EmbeddedGraph(SimpleGraph(0), [], euclidean)
 #edgetype(EG::EmbeddedGraph) = edgetype(EG.graph)
 # The following is not in LightGraphs Interface jl
-edgetype(::EmbeddedGraph{T,U}) where T <: Integer where U = LightGraphs.SimpleEdge{T}
+edgetype(::EmbeddedGraph{T}) where T <: Integer = LightGraphs.SimpleEdge{T}
