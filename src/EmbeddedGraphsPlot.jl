@@ -1,7 +1,3 @@
-using LightGraphs
-using GraphPlot
-using Compose
-
 import GraphPlot.gplot
 
 function gplot(g::EmbeddedGraph, args...)

@@ -1,12 +1,6 @@
-
-using LightGraphs
-using SparseArrays
-using Distances
-
 import LightGraphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
                     is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
                     add_edge!, add_vertex!, add_vertices!, rem_vertex!
-
 import Base: getindex, eltype, rand
 
 """
@@ -27,16 +21,11 @@ end
 function EmbeddedGraph(graph::SimpleGraph{T}, vertexpos::Array, distance::Function) where T <: Integer
     EmbeddedGraph{T}(graph, vertexpos, (i, j) -> distance(vertexpos[i], vertexpos[j]))
 end
-function EmbeddedGraph(SG::SimpleGraph, vertexpos::Array)
-    EmbeddedGraph(SG, vertexpos, euclidean)
-end
-# function EmbeddedGraph(SG::SimpleGraph, vertexpos::Array, distance::Function)
-#     EmbeddedGraph(SG, vertexpos, distance) = new(EG,(i, j) -> distance(vertexpos[i], vertexpos[j]))
-# end
-function EmbeddedGraph(EG::SimpleGraph, vertexpos::Array, distance::Metric)
-    EmbeddedGraph(EG, vertexpos, (i, j) -> evaluate(distance, i, j))
-end
-
+EmbeddedGraph(graph::SimpleGraph, vertexpos::Array) = EmbeddedGraph(graph, vertexpos, euclidean)
+EmbeddedGraph(graph::SimpleGraph, vertexpos::Array, distance::Metric) = EmbeddedGraph(graph, vertexpos, (i, j) -> evaluate(distance, i, j))
+EmbeddedGraph() = EmbeddedGraph(SimpleGraph(0), [])
+EmbeddedGraph(graph::SimpleGraph) = EmbeddedGraph(graph, map(i->[rand(),rand()], 1:nv(graph)))
+EmbeddedGraph(nv::Integer) = EmbeddedGraph(SimpleGraph(nv))
 # Our first design is to make g indexable to get distances
 # weights(EG::EmbeddedGraph) = EG
 # Distance is constructed with a sparse matrix
@@ -82,11 +71,11 @@ end
     EG.vertexpos array. rem_vertex! in LightGraphs swaps the vertex v with
     the last vertex and then uses pop! on the list to delete the last element.
 """
-    function rem_vertex!(EG::EmbeddedGraph, v::Integer, args...)
-        rem_vertex!(EG.graph, v, args...)
-        EG.vertexpos[v] = EG.vertexpos[end]
-        pop!(EG.vertexpos)
-    end
+function rem_vertex!(EG::EmbeddedGraph, v::Integer, args...)
+    rem_vertex!(EG.graph, v, args...)
+    EG.vertexpos[v] = EG.vertexpos[end]
+    pop!(EG.vertexpos)
+end
 
 """ Removes multiple vertices with given Indices at once"""
 function rem_vertices!(EG::EmbeddedGraph, vs::AbstractVector{<:Integer}, args...)
@@ -128,7 +117,7 @@ rem_edge!(EG::EmbeddedGraph, args...) = rem_edge!(EG.graph,args...)
 
 # The following four are not in the Developer Documentation
 is_directed(::Type{EmbeddedGraph{T}}) where T <: Integer = false
-zero(EG::EmbeddedGraph) = EmbeddedGraph(SimpleGraph(0), [], euclidean)
+zero(EG::EmbeddedGraph) = EmbeddedGraph()
 #edgetype(EG::EmbeddedGraph) = edgetype(EG.graph)
 # The following is not in LightGraphs Interface jl
 edgetype(::EmbeddedGraph{T}) where T <: Integer = LightGraphs.SimpleEdge{T}
