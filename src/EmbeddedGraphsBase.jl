@@ -1,6 +1,6 @@
 import LightGraphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
                     is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
-                    add_edge!, add_vertex!, add_vertices!, rem_vertex!
+                    add_edge!, add_vertex!, add_vertices!, rem_vertex!, rem_vertices!
 import Base: getindex, eltype, rand
 
 """
@@ -96,6 +96,7 @@ distance of the two vertices in the metric of the graph.
 """
 Base.getindex(EG::EmbeddedGraph, i, j) = EG.distance(i, j)
 Base.getindex(EG::EmbeddedGraph, I::CartesianIndex{2}) = EG.distance(Tuple(I)...)
+Base.getindex(EG::EmbeddedGraph, i) = EG.vertexpos[i]
 
 """Extends the Base.rand function to work with a SimpleEdgeIter"""
 Base.rand(edge_iter::LightGraphs.SimpleGraphs.SimpleEdgeIter) = rand(collect(edge_iter))
