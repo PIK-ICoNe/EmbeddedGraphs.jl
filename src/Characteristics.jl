@@ -5,15 +5,6 @@ Define characteristic quantities for spatial networks from
 
 import LightGraphs: dijkstra_shortest_paths
 
-""" Calculate the characteristic length (average shortest path) of a graph."""
-function characteristic_length(graph::AbstractGraph; cutoff::Real=1000)
-    L = 0
-    for i in 1:nv(graph)
-        L += sum(clamp.(dijkstra_shortest_paths(graph, i).dists, 0, cutoff))
-    end
-    return L / (nv(graph) * (nv(graph) - 1))
-end
-
 function detour_indices(eg::EmbeddedGraph, i)
     weight_matrix = zeros(nv(eg), nv(eg))
     for I in CartesianIndices(weight_matrix)
@@ -24,7 +15,7 @@ function detour_indices(eg::EmbeddedGraph, i)
 end
 
 """ Changes the given graph, so that only the largest component remains"""
-function get_largest_component!(graph::AbstractGraph)
+function largest_component!(graph::AbstractGraph)
     ### FIRST COMPONENT IS NOT LARGEST COMPONENT!!!
     components = connected_components(graph)
     len = map(i -> length(components[i]), 1:length(components))
@@ -34,6 +25,7 @@ function get_largest_component!(graph::AbstractGraph)
     graph
 end
 
+largest_component(graph::AbstractGraph) = largest_component!(Graph(graph))
 """
 Implementation of the Small-World-Ness measure by M. D. Humphries and K. Gurney.
 doi:10.1371/journal.pone.0002051
@@ -46,22 +38,23 @@ where
 GCC := Global Clustering Coefficient
 CL  := arachteristic Length
 """
-function small_world_ness(graph::AbstractGraph; Num_rand_graph::Integer=1000)
+function small_world_ness(graph::AbstractGraph; Num_rand_graph::Integer=100)
+    larg_comp_graph = largest_component(graph)
+    small_world_ness(nv(larg_comp_graph), ne(larg_comp_graph), global_clustering_coefficient(larg_comp_graph),
+        characteristic_length(larg_comp_graph); Num_rand_graph = Num_rand_graph)
+end
+
+function small_world_ness(NV::Integer, NE::Integer, gcc::Real, cl::Real; Num_rand_graph::Integer=100)
     rgcc = 0
     rcl  = 0
-    NV = nv(graph)
-    NE = ne(graph)
-    get_largest_component!(graph)
     for i in 1:Num_rand_graph
         rg = erdos_renyi(NV, NE)
-        get_largest_component!(rg)
+        largest_component!(rg)
         rgcc += global_clustering_coefficient(rg)
         rcl  += characteristic_length(rg)
-        # println(rcl==NaN)
     end
-    γ_C = global_clustering_coefficient(graph) / (rgcc / Num_rand_graph)
-    γ_L = characteristic_length(graph) / (rcl / Num_rand_graph)
-    println(γ_C, ", ", γ_L, ", ", rcl)
+    γ_C = gcc / (rgcc / Num_rand_graph)
+    γ_L = cl / (rcl / Num_rand_graph)
     return γ_C / γ_L
 end
 
@@ -72,5 +65,44 @@ function characteristic_length(graph::AbstractGraph; cutoff::Real=Inf, silent=fa
     for i in 1:nv(graph)
         L += sum(clamp.(dijkstra_shortest_paths(graph, i).dists, 0, cutoff))
     end
+    return L / (nv(graph) * (nv(graph) - 1))
+end
+
+""" Calculate the sum of all the weights of the edges of a graph. """
+function wiring_length(EG::EmbeddedGraph; distmx::AbstractMatrix=weights(EG))
+    return sum(distmx) / 2. / ne(EG)
+end
+
+""" Returns the degree histogram in an array."""
+function degree_array(graph::AbstractGraph; bins::Integer=50)
+    histogram = degree_histogram(graph)
+    degree_array = zeros(bins)
+    for pair in histogram
+        degree_array[pair.first + 1] = pair.second
+    end
+    degree_array ./ nv(graph)
+end
+
+""" Returns the local clustering coefficient as a histogram in an array."""
+function local_clustering_histogram(graph::AbstractGraph; bins::Integer=101)
+    coefficient = local_clustering_coefficient(graph)
+    histogram = zeros(bins)
+    for value in coefficient
+        histogram[floor(Integer, value*(bins-1)) + 1] += 1.
+    end
+    histogram ./ nv(graph)
+end
+
+
+function characteristic_length1(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
+    dists = clamp.(LightGraphs.Parallel.floyd_warshall_shortest_paths(graph, distmx).dists, 0., cutoff)
+    # clamp!(dists, 0., cutoff)
+    return sum(dists) / (nv(graph) * (nv(graph) - 1))
+end
+
+
+
+function characteristic_length3(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
+    L = sum(clamp.(LightGraphs.Parallel.dijkstra_shortest_paths(g,collect(1:250)).dists, 0., cutoff))
     return L / (nv(graph) * (nv(graph) - 1))
 end
