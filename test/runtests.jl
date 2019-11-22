@@ -8,9 +8,11 @@ using EmbeddedGraphs
 
 Random.seed!(42)
 
-g = barabasi_albert(20, 3)
-pos = [rand(2) for i in 1:20]
+n = 50
+g = barabasi_albert(n, 3)
+pos = [rand(2) for i in 1:n]
 eg = EmbeddedGraph(copy(g), pos)
+earth_radius = 6.3781e3 # km
 
 @testset "testing the constructor" begin
     @test eg.graph == g
@@ -24,7 +26,6 @@ eg = EmbeddedGraph(copy(g), pos)
     @test eg2.distance(1, 2) == eg2.distance(2, 1)
 
     # alternatively, use the great-circle distance
-    earth_radius = 6.3781e3 # km
     eg3 = EmbeddedGraph(g, pos, Haversine(earth_radius))
     @test eg3.distance(1, 1) == 0
     @test eg3.distance(1, 2) == eg3.distance(2, 1)
@@ -73,4 +74,35 @@ end
 @testset "testing characteristics" begin
     di = detour_indices(eg, 1)
     @test isnan(di[1])
+end
+
+@testset "testing random_geometric_graph" begin
+    rad = 0.15 # set threshold radius
+
+    rg = random_geometric_graph(n, rad; pos=pos)
+
+    @test all(weights(rg) .< rad)
+
+    eg_complete = EmbeddedGraph(complete_graph(n), pos)
+    random_geometric_graph!(eg_complete, rad)
+
+    @test eg_complete.graph.fadjlist == rg.graph.fadjlist
+
+    rg3d = random_geometric_graph(n, rad; dim=3)
+
+    @test all(weights(rg3d) .< rad)
+    @test all(length.(rg3d.vertexpos) .== 3)
+
+    # this graph should be identical to rg with the same weights
+    rgm = random_geometric_graph(n, rad; pos=pos, dist_func=Euclidean())
+
+    @test rg.graph.fadjlist == rgm.graph.fadjlist
+    @test weights(rg) == weights(rgm)
+
+    # the edge weights and the spatial distance can be distinct
+    eg_haver = EmbeddedGraph(complete_graph(n), pos, Haversine(earth_radius))
+    random_geometric_graph!(eg_haver, rad; dist_func=Euclidean())
+
+    @test rg.graph.fadjlist == eg_haver.graph.fadjlist
+    @test weights(rg) != weights(eg_haver)
 end
