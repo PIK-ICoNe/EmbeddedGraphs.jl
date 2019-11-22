@@ -17,6 +17,10 @@ module EmbeddedGraphs
 
     export detour_indices
 
+    include(joinpath(dirname(@__FILE__), "EmbeddedGraphGenerators.jl"))
+
+    export random_geometric_graph, random_geometric_graph!
+
     include(joinpath(dirname(@__FILE__), "EmbeddedGraphsPlot.jl"))
 
     export gplot
