@@ -59,8 +59,7 @@ function small_world_ness(NV::Integer, NE::Integer, gcc::Real, cl::Real; Num_ran
 end
 
 """ Calculate the characteristic length (average shortest path) of a graph."""
-function characteristic_length(graph::AbstractGraph; cutoff::Real=Inf, silent=false)
-    (!silent && !is_connected(graph)) && (@warn "Graph is not connected")
+function characteristic_length(graph::AbstractGraph; cutoff::Real=Inf)
     L = 0
     for i in 1:nv(graph)
         L += sum(clamp.(dijkstra_shortest_paths(graph, i).dists, 0, cutoff))
