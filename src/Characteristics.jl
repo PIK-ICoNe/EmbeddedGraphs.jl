@@ -38,23 +38,15 @@ where
 GCC := Global Clustering Coefficient
 CL  := arachteristic Length
 """
-function small_world_ness(graph::AbstractGraph; Num_rand_graph::Integer=100)
+function small_world_ness(graph::AbstractGraph)
     larg_comp_graph = largest_component(graph)
     small_world_ness(nv(larg_comp_graph), ne(larg_comp_graph), global_clustering_coefficient(larg_comp_graph),
-        characteristic_length(larg_comp_graph); Num_rand_graph = Num_rand_graph)
+        characteristic_length(larg_comp_graph))
 end
 
-function small_world_ness(NV::Integer, NE::Integer, gcc::Real, cl::Real; Num_rand_graph::Integer=100)
-    rgcc = 0
-    rcl  = 0
-    for i in 1:Num_rand_graph
-        rg = erdos_renyi(NV, NE)
-        largest_component!(rg)
-        rgcc += global_clustering_coefficient(rg)
-        rcl  += characteristic_length(rg)
-    end
-    γ_C = gcc / (rgcc / Num_rand_graph)
-    γ_L = cl / (rcl / Num_rand_graph)
+function small_world_ness(NV::Integer, NE::Integer, gcc::Real, cl::Real)
+    γ_C = gcc / global_clustering_coefficient_ER(NV, NE)
+    γ_L = cl / characteristic_length_ER(NV, NE)
     return γ_C / γ_L
 end
 
@@ -105,3 +97,10 @@ function characteristic_length3(graph::AbstractGraph; cutoff::Real=1000., distmx
     L = sum(clamp.(LightGraphs.Parallel.dijkstra_shortest_paths(g,collect(1:250)).dists, 0., cutoff))
     return L / (nv(graph) * (nv(graph) - 1))
 end
+
+"""
+Average path length of ER network as in 10.1103/PhysRevE.70.056110 .
+"""
+characteristic_length_ER(n, m) = (log(n) - Base.MathConstants.eulergamma) / log((2 * m) / n) + 0.5
+
+global_clustering_coefficient_ER(n, m) = 2m / (n * (n - 1))
