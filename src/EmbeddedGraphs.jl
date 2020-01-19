@@ -4,11 +4,14 @@ module EmbeddedGraphs
 
     # EmbeddedGraph constructors
     include(joinpath(dirname(@__FILE__), "EmbeddedGraphsBase.jl"))
+    include(joinpath(dirname(@__FILE__), "embeddedgraphs.jl"))
+    include(joinpath(dirname(@__FILE__), "euclideangraphs.jl"))
 
+    export AbstractEmbeddedGraph, EmbeddedGraph, EuclideanGraph
     export edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
            is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
            add_edge!, add_vertex!, add_vertices!, rem_vertex!
-    export weights, EmbeddedGraph, rem_vertices!, vertices_loc
+    export weights, rem_vertices!, vertices_loc
     export getindex, rand
     export characteristic_length, wiring_length, small_world_ness, largest_component,
             largest_component!

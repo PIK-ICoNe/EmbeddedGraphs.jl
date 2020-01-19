@@ -25,7 +25,7 @@ julia> egh.graph
 {50, 71} undirected simple Int64 graph
 ```
 """
-function random_geometric_graph!(eg::EmbeddedGraph, radius::Real; dist_func=Nothing)
+function random_geometric_graph!(eg::AbstractEmbeddedGraph, radius::Real; dist_func=Nothing)
 
     @assert diameter(eg.graph) == 1 # check if eg is a complete graph.
 

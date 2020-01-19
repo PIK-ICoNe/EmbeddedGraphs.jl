@@ -5,7 +5,7 @@ Define characteristic quantities for spatial networks from
 
 import LightGraphs: dijkstra_shortest_paths
 
-function detour_indices(eg::EmbeddedGraph, i)
+function detour_indices(eg::AbstractEmbeddedGraph, i)
     weight_matrix = zeros(nv(eg), nv(eg))
     for I in CartesianIndices(weight_matrix)
         weight_matrix[I] = eg[I]
@@ -60,7 +60,7 @@ function characteristic_length(graph::AbstractGraph; cutoff::Real=Inf)
 end
 
 """ Calculate the sum of all the weights of the edges of a graph. """
-function wiring_length(EG::EmbeddedGraph; distmx::AbstractMatrix=weights(EG))
+function wiring_length(EG::AbstractEmbeddedGraph; distmx::AbstractMatrix=weights(EG))
     return sum(distmx) / 2. / ne(EG)
 end
 
