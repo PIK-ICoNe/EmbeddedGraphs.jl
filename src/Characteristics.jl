@@ -38,17 +38,29 @@ where
 GCC := Global Clustering Coefficient
 CL  := arachteristic Length
 """
-function small_world_ness(graph::AbstractGraph)
+function small_world_ness_HG(graph::AbstractGraph)
     larg_comp_graph = largest_component(graph)
-    small_world_ness(nv(larg_comp_graph), ne(larg_comp_graph), global_clustering_coefficient(larg_comp_graph),
+    small_world_ness_HG(nv(larg_comp_graph), ne(larg_comp_graph), global_clustering_coefficient(larg_comp_graph),
         characteristic_length(larg_comp_graph))
 end
 
-function small_world_ness(NV::Integer, NE::Integer, gcc::Real, cl::Real)
+function small_world_ness_HG(NV::Integer, NE::Integer, gcc::Real, cl::Real)
     γ_C = gcc / global_clustering_coefficient_ER(NV, NE)
     γ_L = cl / characteristic_length_ER(NV, NE)
     return γ_C / γ_L
 end
+
+"""
+Small-world-ness measure as in 10.1089/brain.2011.0038
+"""
+function small_world_ness_Telesford(graph::AbstractGraph)
+    small_world_ness_Telesford(graph, characteristic_length_ER(graph), global_clustering_coefficient_Latt(graph))
+end
+function small_world_ness_Telesford(graph::AbstractGraph, L_ER::Real, C_Latt::Real)
+    L_ER / characteristic_length(graph; cutoff=100) -
+    global_clustering_coefficient(graph) / C_Latt
+end
+
 
 """ Calculate the characteristic length (average shortest path) of a graph."""
 function characteristic_length(graph::AbstractGraph; cutoff::Real=Inf)
@@ -101,6 +113,30 @@ end
 """
 Average path length of ER network as in 10.1103/PhysRevE.70.056110 .
 """
-characteristic_length_ER(n, m) = (log(n) - Base.MathConstants.eulergamma) / log((2 * m) / n) + 0.5
+characteristic_length_ER(g::AbstractGraph) = characteristic_length_ER(nv(g), ne(g))
+characteristic_length_ER(n::Integer, k::Real) = characteristic_length_ER(n, round(Integer, n / (2k)))
+characteristic_length_ER(n::Integer, m::Integer) = (log(n) - Base.MathConstants.eulergamma) / log((2 * m) / n) + 0.5
 
-global_clustering_coefficient_ER(n, m) = 2m / (n * (n - 1))
+
+
+"""
+clustering coefficient of an erdos renyi graph is equal to <k>/(n-1),
+because the probability of any vertex to be connected to any other vertex is the
+same and equal to the existence of any link. """
+global_clustering_coefficient_ER(g::AbstractGraph) = global_clustering_coefficient_ER(nv(g), ne(g))
+global_clustering_coefficient_ER(n::Integer, k::Real) = global_clustering_coefficient_ER(n, round(Integer, k * n / 2))
+global_clustering_coefficient_ER(n::Integer, m::Integer) = 2m / (n * (n - 1))
+
+
+
+"""
+clustering coefficient of a ring lattice with average degree k = 2m/n. Only
+graphs with even k can be created, therefore the upper and lower even k lattices
+are average with weights
+"""
+global_clustering_coefficient_Latt(g::AbstractGraph) = global_clustering_coefficient_Latt(nv(g), ne(g))
+global_clustering_coefficient_Latt(n::Integer, m::Integer) = global_clustering_coefficient_Latt(n, 2m / n)
+function global_clustering_coefficient_Latt(n::Integer, k::Real)
+    0.5 * (2 - k % 2) * global_clustering_coefficient(watts_strogatz(n, 2*round(Integer, k/2, RoundDown), 0.)) +
+    0.5 * (k % 2) * global_clustering_coefficient(watts_strogatz(n, 2*round(Integer, k/2, RoundUp), 0.))
+end
