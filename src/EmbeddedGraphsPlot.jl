@@ -6,6 +6,7 @@ function gplot(g::AbstractEmbeddedGraph, args...)
     gplot(g.graph, loc_x, loc_y, args...)
 end
 
+
 function gplot(g::AbstractEmbeddedGraph, loc_x::Array{<:Real}, loc_y::Array{<:Real}, args...)
     gplot(g.graph, loc_x, loc_y, args...)
 end
