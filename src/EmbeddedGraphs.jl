@@ -4,7 +4,7 @@ module EmbeddedGraphs
 
     # EmbeddedGraph constructors
     include(joinpath(dirname(@__FILE__), "EmbeddedGraphsBase.jl"))
-    include(joinpath(dirname(@__FILE__), "embeddedgraphs.jl"))
+    include(joinpath(dirname(@__FILE__), "embeddedgraph.jl"))
     include(joinpath(dirname(@__FILE__), "euclideangraphs.jl"))
 
     export AbstractEmbeddedGraph, EmbeddedGraph, EuclideanGraph
