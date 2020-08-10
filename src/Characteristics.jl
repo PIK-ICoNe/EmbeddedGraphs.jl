@@ -49,6 +49,9 @@ function small_world_ness_HG(NV::Integer, NE::Integer, gcc::Real, cl::Real)
     γ_L = cl / characteristic_length_ER(NV, NE)
     return γ_C / γ_L
 end
+function small_world_ness_HG(NV::Integer, k::Real, gcc::Real, cl::Real)
+    return small_world_ness_HG(NV, round(Integer, k*NV/2), gcc, cl)
+end
 
 """
 Small-world-ness measure as in 10.1089/brain.2011.0038
