@@ -98,7 +98,7 @@ rem_edge!(EG::AbstractEmbeddedGraph, args...) = rem_edge!(EG.graph,args...)
 
 # The following four are not in the Developer Documentation
 is_directed(::Type{AbstractEmbeddedGraph{T}}) where T <: Integer = false
-zero(EG::AbstractEmbeddedGraph) = AbstractEmbeddedGraph()
+zero(EG::AbstractEmbeddedGraph) = EmbeddedGraph()
 #edgetype(EG::AbstractEmbeddedGraph) = edgetype(EG.graph)
 # The following is not in LightGraphs Interface jl
 edgetype(::AbstractEmbeddedGraph{T}) where T <: Integer = LightGraphs.SimpleEdge{T}
