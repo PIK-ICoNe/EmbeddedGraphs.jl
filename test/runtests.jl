@@ -48,7 +48,7 @@ end
 
 @testset "testing weights function" begin
     @test typeof(weights(eg)) <: SparseMatrixCSC
-    @test iszero(eg[1, 1])
+    @test all([iszero(eg[i, i]) for i in 1:nv(eg)])
     @test eg[1, 2] == eg[2, 1]
     # test cartesian indexing
     @test eg[CartesianIndex(1, 1)] == 0
