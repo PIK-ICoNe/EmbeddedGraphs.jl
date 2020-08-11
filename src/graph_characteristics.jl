@@ -5,6 +5,9 @@ Define characteristic quantities for spatial networks from
 
 import LightGraphs: dijkstra_shortest_paths
 
+"""
+detour_indices(eg::AbstractEmbeddedGraph, i)
+"""
 function detour_indices(eg::AbstractEmbeddedGraph, i)
     weight_matrix = zeros(nv(eg), nv(eg))
     for I in CartesianIndices(weight_matrix)
@@ -12,6 +15,16 @@ function detour_indices(eg::AbstractEmbeddedGraph, i)
     end
     paths = dijkstra_shortest_paths(eg.graph, i, weight_matrix, allpaths=false)
     [paths.dists[j] / eg.distance(i, j) for j in 1:nv(eg)]
+end
+
+
+function detour_indices(EG::EuclideanGraph, i)
+    weight_matrix = zeros(nv(EG), nv(EG))
+    for I in CartesianIndices(weight_matrix)
+        weight_matrix[I] = EG[I]
+    end
+    paths = dijkstra_shortest_paths(EG.graph, i, weight_matrix, allpaths=false)
+    [paths.dists[j] / EG[i, j] for j in 1:nv(EG)]
 end
 
 """ Changes the given graph, so that only the largest component remains"""
@@ -26,6 +39,7 @@ function largest_component!(graph::AbstractGraph)
 end
 
 largest_component(graph::AbstractGraph) = largest_component!(Graph(graph))
+
 """
 Implementation of the Small-World-Ness measure by M. D. Humphries and K. Gurney.
 doi:10.1371/journal.pone.0002051
