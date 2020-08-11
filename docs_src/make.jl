@@ -4,7 +4,6 @@ push!(LOAD_PATH, "../")
 using EmbeddedGraphs
 
 makedocs(
-    sitename = "EmbeddedGraphs",
     format = Documenter.HTML(canonical = "fhell.github.io/EmbeddedGraphs.jl/"),
     modules = [EmbeddedGraphs],
     authors = "Frank Hellmann, Oskar Pfeffer, Paul Schultz and further contributors.",
