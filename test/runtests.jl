@@ -8,11 +8,11 @@ using EmbeddedGraphs
 
 Random.seed!(42)
 
-n = 50
-g = barabasi_albert(n, 3)
-pos = [rand(2) for i in 1:n]
-eg = EmbeddedGraph(copy(g), pos)
-earth_radius = 6.3781e3 # km
+const n = 50
+const g = barabasi_albert(n, 3)
+const pos = [rand(2) for i in 1:n]
+const eg = EmbeddedGraph(copy(g), pos)
+const earth_radius = 6.3781e3 # km
 
 @testset "testing the constructor" begin
     @test eg.graph == g
@@ -48,14 +48,14 @@ end
 
 @testset "testing weights function" begin
     @test typeof(weights(eg)) <: SparseMatrixCSC
-    @test iszero(eg[1, 1])
+    @test all([iszero(eg[i, i]) for i in 1:nv(eg)])
     @test eg[1, 2] == eg[2, 1]
     # test cartesian indexing
     @test eg[CartesianIndex(1, 1)] == 0
 end
 
 @testset "testing additional method extensions" begin
-    @test typeof(zero(eg)) <: EmbeddedGraph
+    @test typeof(zero(eg)) <:  AbstractEmbeddedGraph
     @test edgetype(eg) == edgetype(g)
 end
 

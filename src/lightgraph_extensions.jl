@@ -1,6 +1,7 @@
 import LightGraphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
                     is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
-                    add_edge!, add_vertex!, add_vertices!, rem_vertex!, rem_vertices!
+                    add_edge!, add_vertex!, add_vertices!, rem_vertex!
+                    # rem_vertices!
 import Base: getindex, eltype, rand
 
 abstract type AbstractEmbeddedGraph{T} <: AbstractGraph{T} end
@@ -14,16 +15,16 @@ abstract type AbstractEmbeddedGraph{T} <: AbstractGraph{T} end
     between every vertex is inserted, or sparse, i.e. only the distance
     between connected vertices is given back.
 """
-function weights(EG::AbstractEmbeddedGraph; dense::Bool=false)
+function weights(EG::AbstractEmbeddedGraph; dense::Bool = false)
     if dense
         A = zeros(nv(EG), nv(EG))
-        for i in 1:nv(EG)-1
+        for i in 1:nv(EG) - 1
             for j in i:nv(EG)
                 A[i,j] = A[j,i] = EG[i,j]
             end
         end
     else
-        A = spzeros(nv(EG),nv(EG))
+        A = spzeros(nv(EG), nv(EG))
         for edge in edges(EG.graph)
             A[src(edge), dst(edge)] = A[dst(edge), src(edge)] = EG[src(edge), dst(edge)]
         end
@@ -92,13 +93,15 @@ nv(EG::AbstractEmbeddedGraph, args...) = nv(EG.graph, args...)
 outneighbors(EG::AbstractEmbeddedGraph, args...) = outneighbors(EG.graph, args...)
 vertices(EG::AbstractEmbeddedGraph, args...) = vertices(EG.graph, args...)
 is_directed(EG::AbstractEmbeddedGraph, args...) = false
-is_directed(::Type{AbstractEmbeddedGraph}) = false
-add_edge!(EG::AbstractEmbeddedGraph, args...) = add_edge!(EG.graph,args...)
-rem_edge!(EG::AbstractEmbeddedGraph, args...) = rem_edge!(EG.graph,args...)
+is_directed(::Type{<:AbstractEmbeddedGraph}) = false
+add_edge!(EG::AbstractEmbeddedGraph, args...) = add_edge!(EG.graph, args...)
+rem_edge!(EG::AbstractEmbeddedGraph, args...) = rem_edge!(EG.graph, args...)
 
 # The following four are not in the Developer Documentation
 is_directed(::Type{AbstractEmbeddedGraph{T}}) where T <: Integer = false
-zero(EG::AbstractEmbeddedGraph) = AbstractEmbeddedGraph()
-#edgetype(EG::AbstractEmbeddedGraph) = edgetype(EG.graph)
+# edgetype(EG::AbstractEmbeddedGraph) = edgetype(EG.graph)
 # The following is not in LightGraphs Interface jl
 edgetype(::AbstractEmbeddedGraph{T}) where T <: Integer = LightGraphs.SimpleEdge{T}
+
+# This should return a method for a concrete type and not AbstractEmbeddedGraph()
+zero(eg::EG) where EG <: AbstractEmbeddedGraph = zero(EG)

@@ -19,6 +19,10 @@ EuclideanGraph(graph::SimpleGraph) = EuclideanGraph(graph, map(i->[rand(),rand()
 EuclideanGraph(nv::Integer) = EuclideanGraph(SimpleGraph(nv))
 EuclideanGraph() = EuclideanGraph(SimpleGraph(0), [])
 
+# the empty graph
+zero(::Type{EuclideanGraph{T}}) where T = EuclideanGraph()
+
+
 """
 Extends Base.getindex function to be able to call EG[i,j]. Returns the
 distance of the two vertices in the metric of the graph.
@@ -27,11 +31,3 @@ Base.getindex(EG::EuclideanGraph, i::Integer, j::Integer) = euclidean(EG[i], EG[
 Base.getindex(EG::EuclideanGraph, I::CartesianIndex{2}) = euclidean(EG[I[1]], EG[I[2]])
 
 
-function detour_indices(EG::EuclideanGraph, i)
-    weight_matrix = zeros(nv(EG), nv(EG))
-    for I in CartesianIndices(weight_matrix)
-        weight_matrix[I] = EG[I]
-    end
-    paths = dijkstra_shortest_paths(EG.graph, i, weight_matrix, allpaths=false)
-    [paths.dists[j] / EG[i, j] for j in 1:nv(EG)]
-end
