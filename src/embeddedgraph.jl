@@ -21,3 +21,6 @@ EmbeddedGraph(graph::SimpleGraph, vertexpos::Array, distance::Metric) = Embedded
 EmbeddedGraph() = EmbeddedGraph(SimpleGraph(0), [])
 EmbeddedGraph(graph::SimpleGraph) = EmbeddedGraph(graph, map(i->[rand(),rand()], 1:nv(graph)))
 EmbeddedGraph(nv::Integer) = EmbeddedGraph(SimpleGraph(nv))
+
+# the empty graph
+zero(::Type{EmbeddedGraph{T}}) where T = EmbeddedGraph()

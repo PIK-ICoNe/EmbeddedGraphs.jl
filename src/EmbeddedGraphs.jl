@@ -1,11 +1,15 @@
 module EmbeddedGraphs
 
-    using LightGraphs, SparseArrays, Distances, GraphPlot, Compose
+    using LightGraphs, SparseArrays, Distances, GraphPlot
+
+    # extension of LightGraphs.jl for subtypes of AbstractEmbeddedGraph
+    include(joinpath(dirname(@__FILE__), "lightgraph_extensions.jl"))
 
     # EmbeddedGraph constructors
-    include(joinpath(dirname(@__FILE__), "EmbeddedGraphsBase.jl"))
     include(joinpath(dirname(@__FILE__), "embeddedgraph.jl"))
-    include(joinpath(dirname(@__FILE__), "euclideangraphs.jl"))
+
+    # EuclideanGraph constructors
+    include(joinpath(dirname(@__FILE__), "euclideangraph.jl"))
 
     export AbstractEmbeddedGraph, EmbeddedGraph, EuclideanGraph
     export edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
@@ -16,18 +20,18 @@ module EmbeddedGraphs
 
 
     # network characteristics
-    include(joinpath(dirname(@__FILE__), "Characteristics.jl"))
+    include(joinpath(dirname(@__FILE__), "graph_characteristics.jl"))
     export characteristic_length, wiring_length, small_world_ness_HG,
     small_world_ness_Telesford, largest_component, largest_component!
     export degree_array, local_clustering_histogram
     export detour_indices, global_clustering_coefficient_ER, characteristic_length_ER,
     global_clustering_coefficient_Latt
 
-    include(joinpath(dirname(@__FILE__), "EmbeddedGraphGenerators.jl"))
+    include(joinpath(dirname(@__FILE__), "graph_generators.jl"))
 
     export random_geometric_graph, random_geometric_graph!
 
-    include(joinpath(dirname(@__FILE__), "EmbeddedGraphsPlot.jl"))
+    include(joinpath(dirname(@__FILE__), "gplot_extensions.jl"))
 
     export gplot
 
