@@ -1,6 +1,4 @@
-using Revise
 using Documenter
-push!(LOAD_PATH, "../")
 using EmbeddedGraphs
 
 makedocs(
@@ -15,8 +13,7 @@ makedocs(
 # for more information.
 
 deploydocs(
-    repo = "github.com/FHell/EmbeddedGraphs.jl.git",
-    target = "build"
+    repo = "github.com/FHell/EmbeddedGraphs.jl.git"
 )
 
-cp("docs_src/build", "docs", force=true)
+
