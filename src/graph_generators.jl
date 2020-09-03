@@ -16,7 +16,7 @@ Ref.: Penrose, Mathew. Random geometric graphs. Vol. 5. Oxford university press,
 ### Optional Arguments
 - `dist_func`: distance function used to construct the random geometric graph. It can differ from the `distance` attribute of `eg` to allow for independent edge weights. Defaults to `eg.distance` when `dist_func=Nothing` is passed.
 # Examples
-```jldoctest
+```julia
 julia> egh = EmbeddedGraph(complete_graph(n), pos, hamming);
 
 julia> random_geometric_graph!(egh, rad; dist_func=euclidean)
@@ -62,7 +62,7 @@ Ref.: Penrose, Mathew. Random geometric graphs. Vol. 5. Oxford university press,
 - `pos`: vertex positions can be given as a list of `n` points with `dim` coordinates. Defaults to pos=Nothing.
 - `dist_func`: distance function used to construct the random geometric graph. It can differ from the `distance` attribute of `eg` to allow for independent edge weights. Defaults to `eg.distance` when `dist_func=Nothing` is passed.
 # Examples
-```jldoctest
+```julia
 julia> random_geometric_graph(50, 0.2).graph
 {50, 105} undirected simple Int64 graph
 ```
