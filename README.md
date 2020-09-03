@@ -1,3 +1,3 @@
 # EmbeddedGraphs.jl
 
-[![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://fhell.github.io/EmbeddedGraphs.jl/dev)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://fhell.github.io/EmbeddedGraphs.jl/dev)
