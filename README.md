@@ -4,6 +4,13 @@
 
 # Example usage
 
+The example requires
+```julia
+using EmbeddedGraphs
+using Distances
+using LightGraphs
+```
+
 Set the position of the vertices that need to be placed on the graph
 ```julia
 positions = map(i->[rand(),rand()], 1:10)
