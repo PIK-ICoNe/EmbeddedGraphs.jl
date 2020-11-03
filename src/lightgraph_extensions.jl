@@ -83,6 +83,7 @@ Base.getindex(EG::AbstractEmbeddedGraph, i::Integer) = EG.vertexpos[i]
 Base.rand(edge_iter::LightGraphs.SimpleGraphs.SimpleEdgeIter) = rand(collect(edge_iter))
 
 """Extends basic LightGraphs functions to work with AbstractEmbeddedGraphs"""
+SimpleGraph(EG::AbstractEmbeddedGraph) = EG.graph
 edges(EG::AbstractEmbeddedGraph, args...) = LightGraphs.edges(EG.graph, args...)
 Base.eltype(EG::AbstractEmbeddedGraph, args...) = Base.eltype(EG.graph, args...)
 has_edge(EG::AbstractEmbeddedGraph, args...) = LightGraphs.has_edge(EG.graph, args...)
