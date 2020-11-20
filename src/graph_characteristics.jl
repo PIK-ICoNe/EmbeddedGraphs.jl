@@ -80,7 +80,7 @@ end
 
 
 """ Calculate the characteristic length (average shortest path) of a graph."""
-function characteristic_length(graph::AbstractGraph; cutoff::Real=Inf)
+function characteristic_length1(graph::AbstractGraph; cutoff::Real=Inf)
     L = 0
     for i in 1:nv(graph)
         L += sum(clamp.(dijkstra_shortest_paths(graph, i).dists, 0, cutoff))
@@ -114,7 +114,7 @@ function local_clustering_histogram(graph::AbstractGraph; bins::Integer=101)
 end
 
 
-function characteristic_length1(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
+function characteristic_length(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
     dists = clamp.(LightGraphs.Parallel.floyd_warshall_shortest_paths(graph, distmx).dists, 0., cutoff)
     # clamp!(dists, 0., cutoff)
     return sum(dists) / (nv(graph) * (nv(graph) - 1))
@@ -123,7 +123,7 @@ end
 
 
 function characteristic_length3(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
-    L = sum(clamp.(LightGraphs.Parallel.dijkstra_shortest_paths(g,collect(1:250)).dists, 0., cutoff))
+    L = sum(clamp.(LightGraphs.Parallel.dijkstra_shortest_paths(graph,collect(1:nv(graph))).dists, 0., cutoff))
     return L / (nv(graph) * (nv(graph) - 1))
 end
 
