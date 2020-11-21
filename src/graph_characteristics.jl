@@ -79,14 +79,7 @@ function small_world_ness_Telesford(graph::AbstractGraph, L_ER::Real, C_Latt::Re
 end
 
 
-""" Calculate the characteristic length (average shortest path) of a graph."""
-function characteristic_length1(graph::AbstractGraph; cutoff::Real=Inf)
-    L = 0
-    for i in 1:nv(graph)
-        L += sum(clamp.(dijkstra_shortest_paths(graph, i).dists, 0, cutoff))
-    end
-    return L / (nv(graph) * (nv(graph) - 1))
-end
+
 
 """ Calculate the sum of all the weights of the edges of a graph. """
 function wiring_length(EG::AbstractEmbeddedGraph; distmx::AbstractMatrix=weights(EG))
@@ -113,18 +106,46 @@ function local_clustering_histogram(graph::AbstractGraph; bins::Integer=101)
     histogram ./ nv(graph)
 end
 
+function characteristic_length(
+    g::AbstractGraph{U},
+    distmx::AbstractMatrix{T}=weights(g)
+) where T<:Real where U<:Integer
+    nvg = nv(g)
+    # if we do checkbounds here, we can use @inbounds later
+    checkbounds(distmx, Base.OneTo(nvg), Base.OneTo(nvg))
+    almosttmax = typemax(T)/100
+    dists = fill(almosttmax, (Int(nvg), Int(nvg)))
 
-function characteristic_length(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
-    dists = clamp.(LightGraphs.Parallel.floyd_warshall_shortest_paths(graph, distmx).dists, 0., cutoff)
-    # clamp!(dists, 0., cutoff)
-    return sum(dists) / (nv(graph) * (nv(graph) - 1))
-end
+    @avx for v in vertices(g)
+        dists[v, v] = zero(T)
+    end
+    undirected = !is_directed(g)
+    @inbounds for e in edges(g)
+        u = src(e)
+        v = dst(e)
 
+        d = 1
 
+        dists[u, v] = min(d, dists[u, v])
+        if undirected
+            dists[v, u] = min(d, dists[v, u])
+        end
+    end
 
-function characteristic_length3(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
-    L = sum(clamp.(LightGraphs.Parallel.dijkstra_shortest_paths(graph,collect(1:nv(graph))).dists, 0., cutoff))
-    return L / (nv(graph) * (nv(graph) - 1))
+    @inbounds for pivot in vertices(g)
+        # Relax dists[u, v] = min(dists[u, v], dists[u, pivot]+dists[pivot, v]) for all u, v
+        for v in vertices(g)
+            d = dists[pivot, v]
+            d == almosttmax && continue
+            for u in vertices(g)
+                ans = (dists[u, pivot] == almosttmax ? almosttmax : dists[u, pivot] + d)
+                if dists[u, v] > ans
+                    dists[u, v] = ans
+                end
+            end
+        end
+    end
+    sum(dists)/ (nvg * (nvg-1))
 end
 
 """
@@ -156,4 +177,28 @@ global_clustering_coefficient_Latt(n::Integer, m::Integer) = global_clustering_c
 function global_clustering_coefficient_Latt(n::Integer, k::Real)
     0.5 * (2 - k % 2) * global_clustering_coefficient(watts_strogatz(n, 2*round(Integer, k/2, RoundDown), 0.)) +
     0.5 * (k % 2) * global_clustering_coefficient(watts_strogatz(n, 2*round(Integer, k/2, RoundUp), 0.))
+end
+
+
+
+function characteristic_length(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
+    dists = clamp.(LightGraphs.Parallel.floyd_warshall_shortest_paths(graph, distmx).dists, 0., cutoff)
+    # clamp!(dists, 0., cutoff)
+    return sum(dists) / (nv(graph) * (nv(graph) - 1))
+end
+
+
+
+function characteristic_length3(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
+    L = sum(clamp.(LightGraphs.Parallel.dijkstra_shortest_paths(graph,collect(1:nv(graph))).dists, 0., cutoff))
+    return L / (nv(graph) * (nv(graph) - 1))
+end
+
+""" Calculate the characteristic length (average shortest path) of a graph."""
+function characteristic_length1(graph::AbstractGraph; cutoff::Real=Inf)
+    L = 0
+    for i in 1:nv(graph)
+        L += sum(clamp.(dijkstra_shortest_paths(graph, i).dists, 0, cutoff))
+    end
+    return L / (nv(graph) * (nv(graph) - 1))
 end
