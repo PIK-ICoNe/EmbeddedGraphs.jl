@@ -116,7 +116,7 @@ function characteristic_length(
     almosttmax = typemax(T)/100
     dists = fill(almosttmax, (Int(nvg), Int(nvg)))
 
-    @avx for v in vertices(g)
+    for v in vertices(g)
         dists[v, v] = zero(T)
     end
     undirected = !is_directed(g)
