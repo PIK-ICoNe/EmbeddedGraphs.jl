@@ -32,7 +32,7 @@ function random_geometric_graph!(eg::AbstractEmbeddedGraph, radius::Real; dist_f
     to_remove = []
 
     if dist_func == Nothing
-        for edge in findall(weights(eg) .> radius)
+        for edge in findall(weights(eg,dense=true) .> radius)
             push!(to_remove, edge)
         end
     else
