@@ -87,3 +87,39 @@ function random_geometric_graph(n::Int,
 
     return eg
 end
+
+
+"""Adds m shortest edges."""
+function random_geometric!(eg::AbstractEmbeddedGraph, m::Integer)
+    w = copy(weights(eg, dense=true))
+    w[CartesianIndex.(1:nv(eg),1:nv(eg))] .= typemax(typeof(w[1]))
+    for e in edges(eg)
+        w[e.src,e.dst] = w[e.dst,e.src] = typemax(typeof(w[1]))
+    end
+    for i in 1:m
+        index = findmin(w)[2]
+        src, dst = index[1], index[2]
+        w[src,dst] = w[dst,src] = typemax(typeof(w[1]))
+        add_edge!(eg, src, dst)
+    end
+end
+
+function random_geometric(n::Integer, m::Integer)
+    g = EuclideanGraph(n)
+    random_geometric!(g, m)
+    g
+end
+
+"""Adds all edges shorter than r."""
+function random_geometric!(eg::AbstractEmbeddedGraph, r::Real)
+    for edge in findall(weights(eg, dense=true) .< r)
+        edge[1]>=edge[2] && continue
+        add_edge!(g, edge[1], edge[2])
+    end
+end
+
+function random_geometric(n::Integer, r::Real)
+    eg = EuclideanGraph(n)
+    random_geometric!(eg, r)
+    eg
+end
