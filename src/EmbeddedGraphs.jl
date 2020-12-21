@@ -29,7 +29,7 @@ module EmbeddedGraphs
 
     include(joinpath(dirname(@__FILE__), "graph_generators.jl"))
 
-    export random_geometric_graph, random_geometric_graph!
+    export random_geometric, random_geometric!
 
     include(joinpath(dirname(@__FILE__), "gplot_extensions.jl"))
 
