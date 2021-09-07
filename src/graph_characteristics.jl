@@ -34,7 +34,8 @@ function largest_component!(graph::AbstractGraph)
     len = map(i -> length(components[i]), 1:length(components))
     deleteat!(components, findmax(len)[2])
     components = collect(Iterators.flatten(components))
-    LightGraphs.rem_vertices!(graph, components)
+    rem_vertices!(g,sort(components, rev=true))
+  
     graph
 end
 

@@ -73,7 +73,7 @@ end
 function random_geometric!(eg::AbstractEmbeddedGraph, r::Real)
     for edge in findall(weights(eg, dense=true) .< r)
         edge[1]>=edge[2] && continue
-        add_edge!(g, edge[1], edge[2])
+        add_edge!(eg, edge[1], edge[2])
     end
 end
 
