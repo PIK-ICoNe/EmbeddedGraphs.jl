@@ -2,7 +2,6 @@ using Documenter
 using EmbeddedGraphs
 
 makedocs(
-    format = Documenter.HTML(canonical = "fhell.github.io/EmbeddedGraphs.jl/"),
     modules = [EmbeddedGraphs],
     authors = "Frank Hellmann, Oskar Pfeffer, Paul Schultz and further contributors.",
     sitename = "EmbeddedGraphs.jl",
@@ -13,7 +12,5 @@ makedocs(
 # for more information.
 
 deploydocs(
-    repo = "github.com/FHell/EmbeddedGraphs.jl.git"
+    repo = "github.com/PIK-ICoNe/EmbeddedGraphs.jl.git"
 )
-
-
