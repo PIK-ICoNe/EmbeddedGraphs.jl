@@ -1,6 +1,6 @@
 using Test
 using Random
-using LightGraphs
+using Graphs
 using SparseArrays
 import Distances: Haversine, Euclidean
 

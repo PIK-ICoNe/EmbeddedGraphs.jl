@@ -1,4 +1,4 @@
-import LightGraphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
+import Graphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
                     is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
                     add_edge!, add_vertex!, add_vertices!, rem_vertex!
                     # rem_vertices!
@@ -47,8 +47,8 @@ function add_vertices!(EG::AbstractEmbeddedGraph, pos::Array, args...)
 end
 
 """
-    Extends LightGraphs function and deletes also the element in the
-    EG.vertexpos array. rem_vertex! in LightGraphs swaps the vertex v with
+    Extends Graphs.jl function and deletes also the element in the
+    EG.vertexpos array. rem_vertex! in Graphs.jl swaps the vertex v with
     the last vertex and then uses pop! on the list to delete the last element.
 """
 function rem_vertex!(EG::AbstractEmbeddedGraph, v::Integer, args...)
@@ -80,12 +80,12 @@ Base.getindex(EG::AbstractEmbeddedGraph, i::Integer) = EG.vertexpos[i]
 
 
 """Extends the Base.rand function to work with a SimpleEdgeIter"""
-Base.rand(edge_iter::LightGraphs.SimpleGraphs.SimpleEdgeIter) = rand(collect(edge_iter))
+Base.rand(edge_iter::Graphs.SimpleGraphs.SimpleEdgeIter) = rand(collect(edge_iter))
 
-"""Extends basic LightGraphs functions to work with AbstractEmbeddedGraphs"""
-edges(EG::AbstractEmbeddedGraph, args...) = LightGraphs.edges(EG.graph, args...)
+"""Extends basic Graphs.jl functions to work with AbstractEmbeddedGraphs"""
+edges(EG::AbstractEmbeddedGraph, args...) = Graphs.edges(EG.graph, args...)
 Base.eltype(EG::AbstractEmbeddedGraph, args...) = Base.eltype(EG.graph, args...)
-has_edge(EG::AbstractEmbeddedGraph, args...) = LightGraphs.has_edge(EG.graph, args...)
+has_edge(EG::AbstractEmbeddedGraph, args...) = Graphs.has_edge(EG.graph, args...)
 has_vertex(EG::AbstractEmbeddedGraph, args...) = has_vertex(EG.graph, args...)
 inneighbors(EG::AbstractEmbeddedGraph, args...) = inneighbors(EG.graph, args...)
 ne(EG::AbstractEmbeddedGraph, args...) = ne(EG.graph, args...)
@@ -100,8 +100,8 @@ rem_edge!(EG::AbstractEmbeddedGraph, args...) = rem_edge!(EG.graph, args...)
 # The following four are not in the Developer Documentation
 is_directed(::Type{AbstractEmbeddedGraph{T}}) where T <: Integer = false
 # edgetype(EG::AbstractEmbeddedGraph) = edgetype(EG.graph)
-# The following is not in LightGraphs Interface jl
-edgetype(::AbstractEmbeddedGraph{T}) where T <: Integer = LightGraphs.SimpleEdge{T}
+# The following is not in Graphs.jl Interface jl
+edgetype(::AbstractEmbeddedGraph{T}) where T <: Integer = Graphs.SimpleEdge{T}
 
 # This should return a method for a concrete type and not AbstractEmbeddedGraph()
 zero(eg::EG) where EG <: AbstractEmbeddedGraph = zero(EG)
