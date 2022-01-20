@@ -8,7 +8,7 @@ The example requires
 ```julia
 using EmbeddedGraphs
 using Distances
-using LightGraphs
+using Graphs
 ```
 
 Set the position of the vertices that need to be placed on the graph

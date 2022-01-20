@@ -3,7 +3,7 @@ Define characteristic quantities for spatial networks from
     https://arxiv.org/pdf/1010.0302.pdf
 """
 
-import LightGraphs: dijkstra_shortest_paths
+import Graphs: dijkstra_shortest_paths
 
 """
 detour_indices(eg::AbstractEmbeddedGraph, i)
