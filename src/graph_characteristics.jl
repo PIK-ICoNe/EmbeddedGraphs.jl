@@ -3,7 +3,7 @@ Define characteristic quantities for spatial networks from
     https://arxiv.org/pdf/1010.0302.pdf
 """
 
-import LightGraphs: dijkstra_shortest_paths
+import Graphs: dijkstra_shortest_paths
 
 """
 detour_indices(eg::AbstractEmbeddedGraph, i)
@@ -34,7 +34,7 @@ function largest_component!(graph::AbstractGraph)
     len = map(i -> length(components[i]), 1:length(components))
     deleteat!(components, findmax(len)[2])
     components = collect(Iterators.flatten(components))
-    rem_vertices!(g,sort(components, rev=true))
+    rem_vertices!(graph,sort(components, rev=true))
   
     graph
 end
@@ -183,7 +183,7 @@ end
 
 
 function characteristic_length(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
-    dists = clamp.(LightGraphs.Parallel.floyd_warshall_shortest_paths(graph, distmx).dists, 0., cutoff)
+    dists = clamp.(Graphs.Parallel.floyd_warshall_shortest_paths(graph, distmx).dists, 0., cutoff)
     # clamp!(dists, 0., cutoff)
     return sum(dists) / (nv(graph) * (nv(graph) - 1))
 end
@@ -191,7 +191,7 @@ end
 
 
 function characteristic_length3(graph::AbstractGraph; cutoff::Real=1000., distmx::AbstractMatrix=weights(graph))
-    L = sum(clamp.(LightGraphs.Parallel.dijkstra_shortest_paths(graph,collect(1:nv(graph))).dists, 0., cutoff))
+    L = sum(clamp.(Graphs.Parallel.dijkstra_shortest_paths(graph,collect(1:nv(graph))).dists, 0., cutoff))
     return L / (nv(graph) * (nv(graph) - 1))
 end
 

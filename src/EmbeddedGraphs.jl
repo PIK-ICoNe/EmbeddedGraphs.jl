@@ -1,9 +1,9 @@
 module EmbeddedGraphs
 
-    using LightGraphs, SparseArrays, Distances, GraphPlot
+    using Graphs, SparseArrays, Distances, GraphPlot
 
-    # extension of LightGraphs.jl for subtypes of AbstractEmbeddedGraph
-    include(joinpath(dirname(@__FILE__), "lightgraph_extensions.jl"))
+    # extension of Graphs.jl for subtypes of AbstractEmbeddedGraph
+    include(joinpath(dirname(@__FILE__), "graphs_extensions.jl"))
 
     # EmbeddedGraph constructors
     include(joinpath(dirname(@__FILE__), "embeddedgraph.jl"))

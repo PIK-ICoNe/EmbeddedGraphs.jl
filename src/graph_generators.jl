@@ -1,4 +1,4 @@
-import LightGraphs: complete_graph
+import Graphs: complete_graph
 
 """
     random_geometric_graph!(eg, radius; dist_func=Nothing)
