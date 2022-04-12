@@ -55,7 +55,7 @@ end
 end
 
 @testset "testing additional method extensions" begin
-    @test typeof(zero(eg)) <:  AbstractEmbeddedGraph
+    #@test typeof(zero(eg)) <:  AbstractEmbeddedGraph
     @test edgetype(eg) == edgetype(g)
 end
 
@@ -105,4 +105,76 @@ end
 
     @test rg.graph.fadjlist == eg_haver.graph.fadjlist
     @test weights(rg) != weights(eg_haver)
+end
+
+
+@testset "testing the type of the vertex position array" begin
+
+    @test typeof(eg.vertexpos) == Vector{Vector{Float64}}
+    @test typeof(eg.vertexpos) <: Vector{<:Vector{<:AbstractFloat}}
+
+    @test eltype(eltype(eg.vertexpos)) == Float64
+    @test eltype(eltype(eg.vertexpos)) <: AbstractFloat
+
+    eg2 = EmbeddedGraph(g, pos, Euclidean())
+    @test typeof(eg2.vertexpos) == Vector{Vector{Float64}}
+    @test typeof(eg2.vertexpos) <: Vector{<:Vector{<:AbstractFloat}}
+
+    @test eltype(eltype(eg2.vertexpos)) == Float64
+    @test eltype(eltype(eg2.vertexpos)) <: AbstractFloat    
+
+    eg3 = EmbeddedGraph(g, pos, Haversine(earth_radius))
+    @test typeof(eg3.vertexpos) == Vector{Vector{Float64}}
+    @test typeof(eg3.vertexpos) <: Vector{<:Vector{<:AbstractFloat}}
+
+    @test eltype(eltype(eg3.vertexpos)) == Float64
+    @test eltype(eltype(eg3.vertexpos)) <: AbstractFloat
+    
+    # test type of entries of an empty array
+
+    eg4 = EmbeddedGraph() # empty array
+    @test typeof(eg4.vertexpos) == Vector{Vector{Float64}}
+    @test typeof(eg4.vertexpos) <: Vector{<:Vector{<:AbstractFloat}}
+
+    @test eltype(eltype(eg4.vertexpos)) == Float64
+    @test eltype(eltype(eg4.vertexpos)) <: AbstractFloat
+end
+
+
+@testset "testing rem_vertices!" begin
+    ## test rem_vertex!
+
+    n = 5
+    g = barabasi_albert(n, 3)
+    pos = [[10.0], [20.0], [30.0], [40.0], [50.0]]
+    eg = EmbeddedGraph(copy(g), pos)
+
+    # executing rem_vertex!(EG::AbstractEmbeddedGraph, v::Integer, args...)
+    rem_vertex!(eg, 1)
+    eg.vertexpos
+
+    # executing each step of rem_vertex!(EG::AbstractEmbeddedGraph, v::Integer, args...) for an extra vertex position array
+    pos1 = [[10.0], [20.0], [30.0], [40.0], [50.0]]
+    pos1[1] = pos1[end]
+    pop!(pos1)
+
+    # both arrays should be the same
+    @test pos1 == eg.vertexpos
+
+    ## test rem_vertices!
+
+    pos2 = [[10.0], [20.0], [30.0], [40.0], [50.0]]
+    eg2 = EmbeddedGraph(copy(g), pos2)
+    rem_vertices!(eg2, [1, 2])
+    @test eg2.vertexpos == [[40.0], [50.0], [30.0]]
+
+    pos3 = [[10.0], [20.0], [30.0], [40.0], [50.0]]
+    eg3 = EmbeddedGraph(copy(g), pos3)
+    rem_vertices!(eg3, [4, 5])
+    @test eg3.vertexpos == [[10.0], [20.0], [30.0]]
+
+    pos5 = [[10.0], [20.0], [30.0], [40.0], [50.0]]
+    eg5 = EmbeddedGraph(copy(g), pos5)
+    rem_vertices!(eg5, [1, 5, 3])
+    @test eg5.vertexpos == [[40], [20]]
 end
