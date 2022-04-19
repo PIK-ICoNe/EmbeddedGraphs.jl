@@ -1,20 +1,23 @@
 """
-    EmbeddedGraph{T<:Integer, T2 <:AbstractFloat} <: AbstractEmbeddedGraph{T}
+    EmbeddedGraph{T<:Integer} <: AbstractEmbeddedGraph{T}
+
 
 Embedded Graph
 """
-struct EmbeddedGraph{T<:Integer, T2<:AbstractFloat} <: AbstractEmbeddedGraph{T}
+
+struct EmbeddedGraph{T<:Integer} <: AbstractEmbeddedGraph{T}
     graph::SimpleGraph{T}
-    vertexpos::Vector{Vector{T2}}
+    vertexpos::Vector{Vector{Float64}}
     distance::Function
-    function EmbeddedGraph{T, T2}(graph::SimpleGraph{T}, vertexpos::Vector{Vector{T2}}, distance::Function) where {T <: Integer, T2 <: AbstractFloat}
+
+    function EmbeddedGraph{T}(graph::SimpleGraph{T}, vertexpos::Vector{Vector{Float64}}, distance::Function) where {T <: Integer}
         new(graph, vertexpos, distance)
     end
 end
 
 """Constructor functions for the EmbeddedGraph structure"""
-function EmbeddedGraph(graph::SimpleGraph{T}, vertexpos::Vector{Vector{T2}}, distance::Function) where {T <: Integer, T2 <: AbstractFloat}
-    EmbeddedGraph{T, T2}(graph, vertexpos, (i, j) -> distance(vertexpos[i], vertexpos[j]))
+function EmbeddedGraph(graph::SimpleGraph{T}, vertexpos::Vector{Vector{Float64}}, distance::Function) where {T <: Integer}
+    EmbeddedGraph{T}(graph, vertexpos, (i, j) -> distance(vertexpos[i], vertexpos[j]))
 end
 
 EmbeddedGraph(graph::SimpleGraph, vertexpos::Array) = EmbeddedGraph(graph, vertexpos, euclidean)

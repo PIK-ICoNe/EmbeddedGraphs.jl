@@ -55,7 +55,7 @@ end
 end
 
 @testset "testing additional method extensions" begin
-    #@test typeof(zero(eg)) <:  AbstractEmbeddedGraph
+    @test typeof(zero(eg)) <:  AbstractEmbeddedGraph
     @test edgetype(eg) == edgetype(g)
 end
 
