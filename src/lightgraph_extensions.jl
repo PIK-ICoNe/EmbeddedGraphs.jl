@@ -59,8 +59,8 @@ end
 
 """ Removes multiple vertices with given Indices at once"""
 function rem_vertices!(EG::AbstractEmbeddedGraph, vs::AbstractVector{<:Integer}, args...)
-    vs_sorted = sort!(vs, rev=true)    
-    for i in vs_sorted
+    sort!(vs, rev=true)    
+    for i in vs
         rem_vertex!(EG, i, args...)
     end
 end
