@@ -1,7 +1,7 @@
 import Graphs: edges, ne, nv, has_edge, has_vertex, outneighbors, vertices,
                     is_directed, edgetype, weights, inneighbors, zero, rem_edge!,
-                    add_edge!, add_vertex!, add_vertices!, rem_vertex!
-                    # rem_vertices!
+                    add_edge!, add_vertex!, add_vertices!, rem_vertex!,
+                    rem_vertices!
 import Base: getindex, eltype, rand
 
 abstract type AbstractEmbeddedGraph{T} <: AbstractGraph{T} end
@@ -59,7 +59,8 @@ end
 
 """ Removes multiple vertices with given Indices at once"""
 function rem_vertices!(EG::AbstractEmbeddedGraph, vs::AbstractVector{<:Integer}, args...)
-    for i in vs
+    vs_sorted = sort(vs, rev=true)    
+    for i in vs_sorted
         rem_vertex!(EG, i, args...)
     end
 end
